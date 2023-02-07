@@ -38,34 +38,41 @@ const MORSE_TABLE = {
 };
 
 function decode(expr) {
-    // write your solution here
-    let str = ""
-    let arr = []
-    for (let i = 0; i < expr.length; i +=10){
-        arr.push(expr.substr(i, 10))
-    }
-    arr.forEach(item =>{
-        let str2 = ""
-        for (let i = 0; i < item.length; i += 2){
-            if (item.substr(i, 2) == '10'){
-                str2 = str2.concat('.')
-            } else if (item.substr(i, 2) == '11'){
-                str2 = str2.concat('-')
-            } else if (item.substr(i, 2) == '**'){
-                str2 = str2.concat(' ')
-                i += 8
-            } 
+    let binaryArm = lettersBinary(expr)
+    let morseArr = binaryToMorse(binaryArm)
+    return morseToWord(morseArr)
+}
 
-        };
-        return arr.push(str2)
-    });
-    arr.forEach(item => {
-        if (MORSE_TABLE.hasOwnProperty(item)){
-            str = str.concat(MORSE_TABLE[item])
-        }
-    })
-    return str
-    
+function lettersBinary(expr) {
+    let letters = [];
+    let count = 0; 
+    do {
+        let letter = expr.substr(count, 10)
+        count += 10
+        letters.push(letter)
+    } while (count < expr.length)
+    return letters
+}
+
+function binaryToMorse(arr) {
+    let arrBinary = [];
+    for (let binary of arr) {
+        let withoutEleven = binary.replace(new RegExp('10', 'g'), '.')
+        let withoutTen = withoutEleven.replace(new RegExp('11', 'g'), '-')
+        let withoutZero = withoutTen.replace(new RegExp('00', 'g'), '')
+        arrBinary.push(withoutZero)
+    }
+    return arrBinary;
+}
+
+function morseToWord(arr) {
+    let centence = '';
+    for (let morse of arr) {
+        if (morse !== '**********') {
+            centence += MORSE_TABLE[morse]
+        } else centence += ' '
+    }
+    return centence;
 }
 
 module.exports = {
